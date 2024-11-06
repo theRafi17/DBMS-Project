@@ -1,0 +1,63 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 110vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('images/Agriculture-1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .container {
+    width: 400px;
+    padding: 30px;
+    background-color: #ffffff8b;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    margin-top: -10px; 
+  }
+  h2 {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 20px;
+    color: #333333;
+  }
+  .input-box {
+    margin-bottom: 15px;
+  }
+  .input-box label {
+    font-size: 14px;
+    color: #333333;
+  }
+  .input-box input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    margin-top: 5px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+  }
+  .button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    color: #ffffff;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .button:hover {
+    background-color: #0056b3;
+  }
+  .signup-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  .signup-link a {
+    color: #007bff;
+    text-decoration: none;
+  }

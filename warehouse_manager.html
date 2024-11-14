@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Manager Dashboard</title>
+    <link rel="stylesheet" href="warehouse_manager.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <h1>Warehouse Manager Dashboard</h1>
+        </header>
+        <div class="input-container">
+            <label for="warehouseId">Warehouse ID:</label>
+            <input type="text" id="warehouseId" placeholder="Enter Warehouse ID">
+            <label for="warehouseManagerId">Warehouse Manager ID:</label>
+            <input type="text" id="warehouseManagerId" placeholder="Enter Warehouse Manager ID">
+        
+            <button onclick="displayWarehouseInfo()">Submit</button>
+        </div>
+        <div class="container">
+            <div class="info-card" id="warehouseInfoCard">
+                <h2>Warehouse Information</h2>
+                <p><strong>Warehouse ID:</strong> <span id="displayWarehouseId"></span></p>
+                <p><strong>Warehouse Manager ID:</strong> <span id="displayWarehouseManagerId"></span></p>
+                <p><strong>Manager Name:</strong> <span id="displayWarehouseManagerName"></span></p>
+                <p><strong>Phone Number:</strong> <span id="displayPhoneNumber"></span></p>
+            </div>
+            <div class="section">
+                <h2>Add Barcode</h2>
+                <p>Scan or enter product barcode for storage.</p>
+                <button>Add Barcode</button>
+            </div>
+            <div class="section">
+                <h2>Check Quality</h2>
+                <p>Ensure quality of stored items is maintained.</p>
+                <button>Check Quality</button>
+            </div>
+            <div class="section">
+                <h2>Ensure Safety Compliance</h2>
+                <p>Comply with safety standards and guidelines.</p>
+                <button>View Compliance</button>
+            </div>
+            <div class="section">
+                <h2>Store Crops</h2>
+                <p>Store products safely in designated areas.</p>
+                <button>Store Now</button>
+            </div>
+            <div class="section">
+                <h2>Supply Crops</h2>
+                <p>Organize and manage supply logistics.</p>
+                <button>Manage Supply</button>
+            </div>
+        </div>
+    </div>
+    <script src="warehouse_manager.js"></script>
+</body

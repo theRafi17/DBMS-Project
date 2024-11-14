@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Manager Dashboard</title>
+    <link rel="stylesheet" href="market.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <h1>Market Manager Dashboard</h1>
+        </header>
+        <div class="input-container">
+            <label for="managerId">Manager ID:</label>
+            <input type="text" id="managerId" placeholder="Enter Manager ID">
+            
+            
+            <button onclick="displayManagerInfo()">Submit</button>
+        </div>
+        <div class="container">
+            <div class="info-card" id="managerInfoCard">
+                <h2>Manager Information</h2>
+                <p><strong>Manager ID:</strong> <span id="displayManagerId"></span></p>
+                <p><strong>Manager Name:</strong> <span id="displayManagerName"></span></p>
+                <p><strong>Phone Number:</strong> +123-456-7890</p>
+            </div>
+            <div class="section">
+                <h2>Product Demand Analysis</h2>
+                <p>Analyze product demand trends over time.</p>
+                <button>View Analysis</button>
+            </div>
+            <div class="section">
+                <h2>Managed Farmers Info</h2>
+                <p>Details of farmers managed in this region.</p>
+                <button>View Farmers</button>
+            </div>
+            <div class="section">
+                <h2>Analysis Region for Harvesting</h2>
+                <p>Select and analyze regions for upcoming harvests.</p>
+                <button>Select Region</button>
+            </div>
+            <div class="section">
+                <h2>Barcode Scan</h2>
+                <p>Scan product barcodes for quick data entry.</p>
+                <button>Scan Now</button>
+            </div>
+            <div class="section">
+                <h2>Make Analytic Chart</h2>
+                <p>Generate charts for visual analytics.</p>
+                <button>Create Chart</button>
+            </div>
+        </div>
+    </div>
+    <script src="market.js"></script>
+</body>
+</html>

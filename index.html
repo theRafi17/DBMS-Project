@@ -3,43 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agricultural Officer Dashboard</title>
+    <title>Agriculture Officer Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="dashboard-container">
-        <h1>Agricultural Officer Dashboard</h1>
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" placeholder="Agriculture Officer ID" id="officer-id">
+            <button>Search</button>
+        </div>
 
-        <table class="dashboard-table">
-            <thead>
-                <tr>
-                    <th>Agricultural Officer ID</th>
-                    <th>Officer Name</th>
-                    <th>Warehouse Address</th>
-                    <th>Phone Number</th>
-                    <th>Product Scanned</th>
-                    <th>Product Type</th>
-                    <th>Storage Condition</th>
-                    <th>Date Received</th>
-                    <th>Selling Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Example data row, replace with dynamic data as needed -->
-                <tr>
-                    <td>AO123</td>
-                    <td>John Doe</td>
-                    <td>123 Farm Street</td>
-                    <td>+1234567890</td>
-                    <td>Wheat</td>
-                    <td>Grain</td>
-                    <td>Cool & Dry</td>
-                    <td>2024-11-15</td>
-                    <td>$1200.00</td>
-                </tr>
-                <!-- Additional rows go here -->
-            </tbody>
-        </table>
+        <!-- Info Box Section -->
+        <section class="info-box">
+            <div class="info-card">
+                <h2>Agriculture Officer Details</h2>
+                <p><strong>Name:</strong></p>
+                <p><strong>Warehouse:</strong> </p>
+                <p><strong>Phone Number:</strong></p>
+            </div>
+        </section>
+
+        <!-- Browse by Category Section -->
+        <section class="category-section">
+            <h2>Browse by Category</h2>
+            <div class="category-cards">
+                <div class="category-card">
+                    Product Scanned
+                    <p class="prompt">View details of scanned products in inventory.</p>
+                </div>
+                <div class="category-card">
+                    Product Type
+                    <p class="prompt">Browse products categorized by their type.</p>
+                </div>
+                <div class="category-card">
+                    Storage Condition
+                    <p class="prompt">Check storage conditions for perishable products.</p>
+                </div>
+                <div class="category-card">
+                    Distribute Seeds
+                    <p class="prompt">Access seed distribution details for farmers.</p>
+                </div>
+                <div class="category-card">
+                    Selling Price(kg)
+                    <p class="prompt">View the current selling price of products per kg.</p>
+                </div>
+            </div>
+        </section>
     </div>
 </body>
 </html>

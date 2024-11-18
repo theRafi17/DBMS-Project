@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard</title>
+    <link rel="stylesheet" href="farmer_style.css">
+    <style>
+        /* Add multi-motion background effect */
+        @keyframes gradientAnimation {
+            0% {
+                background-color: #ff6f61; /* Red-orange */
+            }
+            25% {
+                background-color: #6fa3ef; /* Sky blue */
+            }
+            50% {
+                background-color: #8e44ad; /* Purple */
+            }
+            75% {
+                background-color: #f39c12; /* Orange */
+            }
+            100% {
+                background-color: #ff6f61; /* Red-orange */
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #6fa3ef, #8e44ad, #f39c12);
+            animation: gradientAnimation 10s ease infinite;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 40px;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #e6f7ff;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #9d7373;
+            border-radius: 4px;
+        }
+
+        input[type="button"] {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="button"]:hover {
+            background-color: #2980b9;
+        }
+
+        .actions button {
+            padding: 6px 12px;
+            background-color: #f39c12;
+            border: none;
+            color: white;
+            font-size: 14px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .actions button:hover {
+            background-color: #e67e22;
+        }
+
+        #chartContainer {
+            width: 80%;
+            margin: 40px auto;
+            background-color: #ffffffcc; 
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Farmer Dashboard</h1>
+
+    <div class="form-container" style="text-align:center;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Farmer Employee ID</th>
+                    <td><input type="text" id="farmerId"></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Crop</th>
+                    <td>
+                        <select id="cropType">
+                            <option value="">Select Crop</option>
+                            <option value="Potatoes">Potatoes</option>
+                            <option value="Wheat">Wheat</option>
+                            <option value="Onion">Onion</option>
+                            <option value="Rice">Rice</option>
+                            <option value="Chili">Chili</option>
+                            <option value="Carrot">Carrot</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Planting Date</th>
+                    <td><input type="date" id="plantingDate"></td>
+                </tr>
+                <tr>
+                    <th>Harvest Date</th>
+                    <td><input type="date" id="harvestDate"></td>
+                </tr>
+                <tr>
+                    <th>Quantity (Kg)</th>
+                    <td><input type="number" id="quantity" min="0"></td>
+                </tr>
+                <tr>
+                    <th>Price per Kg</th>
+                    <td><input type="number" id="pricePerKg" min="0" step="0.01"></td>
+                </tr>
+                <tr>
+                    <th>Total Price</th>
+                    <td><input type="number" id="totalPrice" disabled></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="button" value="Add/Update" onclick="addOrUpdateRow()"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <table border="1" id="show">
+        <thead>
+            <tr>
+                <th>Farmer ID</th>
+                <th>Crop</th>
+                <th>Planting Date</th>
+                <th>Harvest Date</th>
+                <th>Quantity (Kg)</th>
+                <th>Price per Kg</th>
+                <th>Total Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <div id="chartContainer">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        let totalPrices = [];
+        let crops = [];
+        let labels = [];
+        let rowIndex = 0;
+        let editIndex = null;  // This will track the index of the row being edited
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Total Price per Crop',
+                        data: totalPrices,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 100,
+                        },
+                    }
+                }
+            }
+        });
+
+        function calculateTotalPrice() {
+            const quantity = parseFloat(document.getElementById("quantity").value);
+            const pricePerKg = parseFloat(document.getElementById("pricePerKg").value);
+            if (!isNaN(quantity) && !isNaN(pricePerKg)) {
+                const totalPrice = quantity * pricePerKg;
+                document.getElementById("totalPrice").value = totalPrice.toFixed(2);
+            }
+        }
+
+        document.getElementById("quantity").addEventListener("input", calculateTotalPrice);
+        document.getElementById("pricePerKg").addEventListener("input", calculateTotalPrice);
+
+        function addOrUpdateRow() {
+            const farmerId = document.getElementById("farmerId").value;
+            const crop = document.getElementById("cropType").value;
+            const plantingDate = document.getElementById("plantingDate").value;
+            const harvestDate = document.getElementById("harvestDate").value;
+            const quantity = parseFloat(document.getElementById("quantity").value);
+            const pricePerKg = parseFloat(document.getElementById("pricePerKg").value);
+            const totalPrice = parseFloat(document.getElementById("totalPrice").value);
+
+            if (!farmerId || !crop || !plantingDate || !harvestDate || isNaN(quantity) || isNaN(pricePerKg) || isNaN(totalPrice)) {
+                alert("Please fill in all fields with valid data.");
+                return;
+            }
+
+            const tableBody = document.getElementById('tableBody');
+            if (editIndex !== null) {
+                // Update existing row
+                const row = tableBody.rows[editIndex];
+                row.cells[0].innerText = farmerId;
+                row.cells[1].innerText = crop;
+                row.cells[2].innerText = plantingDate;
+                row.cells[3].innerText = harvestDate;
+                row.cells[4].innerText = quantity;
+                row.cells[5].innerText = pricePerKg;
+                row.cells[6].innerText = totalPrice;
+
+                // Update chart data
+                totalPrices[editIndex] = totalPrice;
+                crops[editIndex] = crop;
+                labels[editIndex] = crop;
+                myChart.data.labels = labels;
+                myChart.data.datasets[0].data = totalPrices;
+                myChart.update();
+
+                editIndex = null;  // Reset edit mode
+            } else {
+                // Add new row
+                const newRow = tableBody.insertRow(rowIndex);
+                newRow.insertCell(0).innerText = farmerId;
+                newRow.insertCell(1).innerText = crop;
+                newRow.insertCell(2).innerText = plantingDate;
+                newRow.insertCell(3).innerText = harvestDate;
+                newRow.insertCell(4).innerText = quantity;
+                newRow.insertCell(5).innerText = pricePerKg;
+                newRow.insertCell(6).innerText = totalPrice;
+                
+                // Add action buttons
+                const actionsCell = newRow.insertCell(7);
+                actionsCell.innerHTML = `<button onclick="editRow(${rowIndex})">Edit</button> <button onclick="deleteRow(${rowIndex})">Delete</button>`;
+
+                // Update chart data
+                crops.push(crop);
+                totalPrices.push(totalPrice);
+                labels.push(crop);
+                myChart.data.labels = labels;
+                myChart.data.datasets[0].data = totalPrices;
+                myChart.update();
+
+                rowIndex++;
+            }
+
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById("farmerId").value = '';
+            document.getElementById("cropType").value = '';
+            document.getElementById("plantingDate").value = '';
+            document.getElementById("harvestDate").value = '';
+            document.getElementById("quantity").value = '';
+            document.getElementById("pricePerKg").value = '';
+            document.getElementById("totalPrice").value = '';
+        }
+
+        function editRow(index) {
+            const row = document.getElementById('tableBody').rows[index];
+            document.getElementById("farmerId").value = row.cells[0].innerText;
+            document.getElementById("cropType").value = row.cells[1].innerText;
+            document.getElementById("plantingDate").value = row.cells[2].innerText;
+            document.getElementById("harvestDate").value = row.cells[3].innerText;
+            document.getElementById("quantity").value = row.cells[4].innerText;
+            document.getElementById("pricePerKg").value = row.cells[5].innerText;
+            document.getElementById("totalPrice").value = row.cells[6].innerText;
+
+            editIndex = index; // Set edit mode
+        }
+
+        function deleteRow(index) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.deleteRow(index);
+
+            totalPrices.splice(index, 1);
+            crops.splice(index, 1);
+            labels.splice(index, 1);
+
+            myChart.data.labels = labels;
+            myChart.data.datasets[0].data = totalPrices;
+            myChart.update();
+        }
+    </script>
+</body>
+</html>

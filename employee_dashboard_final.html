@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(-45deg, #2c3e50, #34495e, #1abc9c, #16a085);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      color: white;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .form-container input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button.add {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #2c3e50;
+      color: white;
+    }
+
+    .btn-update {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    .btn-delete {
+      background-color: #f44336;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Employee Dashboard</h1>
+    <div class="form-container">
+      <input type="text" id="employeeId" placeholder="Employee ID">
+      <input type="text" id="employeeName" placeholder="Employee Name">
+      <input type="text" id="employeePhone" placeholder="Phone">
+      <input type="email" id="employeeEmail" placeholder="Email">
+      <input type="text" id="employeeRole" placeholder="Role">
+      <button class="add" onclick="addOrUpdateEmployee()">Add Employee</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="employeeTableBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    let editingRow = null;
+
+    function addOrUpdateEmployee() {
+      const id = document.getElementById("employeeId").value;
+      const name = document.getElementById("employeeName").value;
+      const phone = document.getElementById("employeePhone").value;
+      const email = document.getElementById("employeeEmail").value;
+      const role = document.getElementById("employeeRole").value;
+
+      if (!id || !name || !phone || !email || !role) {
+        alert("Please fill out all fields!");
+        return;
+      }
+
+      if (editingRow) {
+        // Update the row
+        editingRow.cells[0].textContent = id;
+        editingRow.cells[1].textContent = name;
+        editingRow.cells[2].textContent = phone;
+        editingRow.cells[3].textContent = email;
+        editingRow.cells[4].textContent = role;
+
+        editingRow = null; // Clear editing mode
+        document.querySelector("button.add").textContent = "Add Employee"; // Reset button text
+      } else {
+        // Add a new row
+        const tableBody = document.getElementById("employeeTableBody");
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${id}</td>
+          <td>${name}</td>
+          <td>${phone}</td>
+          <td>${email}</td>
+          <td>${role}</td>
+          <td>
+            <button class="btn-update" onclick="editRow(this)">Update</button>
+            <button class="btn-delete" onclick="deleteRow(this)">Delete</button>
+          </td>
+        `;
+
+        tableBody.appendChild(row);
+      }
+
+      clearFields();
+    }
+
+    function editRow(button) {
+      editingRow = button.parentElement.parentElement;
+      const cells = editingRow.children;
+
+      document.getElementById("employeeId").value = cells[0].textContent;
+      document.getElementById("employeeName").value = cells[1].textContent;
+      document.getElementById("employeePhone").value = cells[2].textContent;
+      document.getElementById("employeeEmail").value = cells[3].textContent;
+      document.getElementById("employeeRole").value = cells[4].textContent;
+
+      document.querySelector("button.add").textContent = "Update Employee";
+    }
+
+    function deleteRow(button) {
+      const row = button.parentElement.parentElement;
+      row.remove();
+    }
+
+    function clearFields() {
+      document.getElementById("employeeId").value = "";
+      document.getElementById("employeeName").value = "";
+      document.getElementById("employeePhone").value = "";
+      document.getElementById("employeeEmail").value = "";
+      document.getElementById("employeeRole").value = "";
+
+      editingRow = null; // Clear editing mode
+      document.querySelector("button.add").textContent = "Add Employee"; // Reset button text
+    }
+  </script>
+</body>
+</html>

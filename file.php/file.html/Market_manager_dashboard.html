@@ -113,10 +113,141 @@
             border-radius: 8px;
         }
 
+        /* General styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+}
+
+/* Navbar styling */
+.navbar {
+    background-color: #4caf50;
+    color: white;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.nav-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #3e8e41;
+    border-radius: 5px;
+}
+
+/* Hamburger menu for small screens */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.bar {
+    height: 3px;
+    width: 25px;
+    background-color: white;
+    margin: 3px 0;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .nav-menu {
+        display: none;
+        flex-direction: column;
+        background-color: #4caf50;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+    }
+
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+}
+
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Bar</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="nav-logo">AgriDashboard</a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="./AgriOfficer_dashboard.html" class="nav-link">Farmer Dashboard</a></li>
+                <li class="nav-item"><a href="./Consumer_dashboard.html" class="nav-link">Employee Dashboard</a></li>
+                <li class="nav-item"><a href="./employee_dashboard_final.html" class="nav-link">AgriOfficer Dashboard</a></li>
+                <li class="nav-item"><a href="./Farmer_dashboard.html" class="nav-link">Food Quality Officer</a></li>
+                <li class="nav-item"><a href="./Food_Quality_Officer.html" class="nav-link">Govt Office</a></li>
+                <li class="nav-item"><a href="./Govt_Office.html" class="nav-link">Market Manager Dashboard</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Product Dashboard</a></li>
+                <li class="nav-item"><a href="./Product_dashboard.html" class="nav-link">Consumer Dashboard</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>
+
 
     <h1>Market Manager Dashboard</h1>
 
@@ -309,5 +440,14 @@
             myChart.update();
         }
     </script>
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+    
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    </script>
+    
 </body>
 </html>

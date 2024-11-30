@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="login.css">
+    <script>
+        function redirectToSignup() {
+            window.location.href = 'signup.html';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Login</h2>
+            <form id="login-form">
+                <label for="email-login">Email</label>
+                <input type="email" id="email-login" name="email" required>
+
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required>
+
+                <label for="password-login">Password</label>
+                <input type="password" id="password-login" name="password" required>
+
+                <label for="role">Employee Role</label>
+                <select id="role" name="role" required>
+                    <option value="Agricultural Officer">Agricultural Officer</option>
+                    <option value="Farmer">Farmer</option>
+                    <option value="Customer">Customer</option>
+                    <option value="Food Quality Officer">Food Quality Officer</option>
+                    <option value="Market Manager">Market Manager</option>
+                    <option value="Warhouse Manager">Warhouse Manager</option>
+                </select>
+
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <button onclick="redirectToSignup()">Signup</button></p>
+        </div>
+    </div>
+</body>
+</html>

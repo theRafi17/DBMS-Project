@@ -13,7 +13,6 @@
             <h2>Signup</h2>
             <form id="signup-form">
                 <label for="name">Name</label>
-                <input type="text" id="name" name="name" required>
 
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>

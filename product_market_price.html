@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Market Prices</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(120deg, rgb(25, 52, 15)#e0ffe0);
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 30px;
+            font-weight: 600;
+        }
+
+        .product-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: rgb(180, 242, 181);
+            border: 1px solid #dddddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .product-card h2 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .product-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .product-card .region-prices {
+            margin-top: 10px;
+        }
+
+        .product-card .region-prices span {
+            display: block;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .product-card .market-price {
+            font-size: 18px;
+            color: #00796b;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product Market Price</h1>
+    <div class="product-container">
+        <div class="product-card">
+            <h2>Rice</h2>
+            <p class="market-price">Market Price: 65 tk/kg</p>
+            <div class="region-prices">
+                <span>North: 55 tk/kg</span>
+                <span>South: 65 tk/kg</span>
+                <span>East:  62 tk/kg</span>
+                <span>West:  64 tk/kg</span>
+            </div>
+        </div>
+        <div class="product-card">
+            <h2>Potato</h2>
+            <p class="market-price">Market Price: 75 tk/kg</p>
+            <div class="region-prices">
+                <span>North: 76 tk/kg</span>
+                <span>South: 75 tk/kg</span>
+                <span>East:  75 tk/kg</span>
+                <span>West:  73.5 tk/kg</span>
+            </div>
+        </div>
+        <div class="product-card">
+            <h2>Wheat</h2>
+            <p class="market-price">Market Price: 40 tk/kg</p>
+            <div class="region-prices">
+                <span>North: 37 tk/kg</span>
+                <span>South: 39 tk/kg</span>
+                <span>East: 40 tk/kg</span>
+                <span>West: 38.5 tk/kg</span>
+            </div>
+        </div>
+        <div class="product-card">
+            <h2>Onion</h2>
+            <p class="market-price">Market Price: 130 tk/kg</p>
+            <div class="region-prices">
+                <span>North: 130 tk/kg</span>
+                <span>South: 131 tk/kg</span>
+                <span>East:  130 tk/kg</span>
+                <span>West:  130 tk/kg</span>
+            </div>
+        </div>
+        <div class="product-card">
+            <h2>Chili</h2>
+            <p class="market-price">Market Price: 125 tk/kg</p>
+            <div class="region-prices">
+                <span>North: 120 tk/kg</span>
+                <span>South: 124 tk/kg</span>
+                <span>East:  125 tk/kg</span>
+                <span>West:  122 tk/kg</span>
+            </div>
+        </div>
+        <div class="product-card">
+            <h2>Corn</h2>
+            <p class="market-price">Market Price: 200 tk/kg</p>
+            <div class="region-prices">
+                <span>North: 200 tk/kg</span>
+                <span>South: 195 tk/kg</span>
+                <span>East:  198.5 tk/kg</span>
+                <span>West:  200 tk/kg</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Manager Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(120deg, #e0f7fa, #e0ffe0);
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 30px;
+            font-weight: 600;
+        }
+
+        .form-container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .form-container input,
+        .form-container select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-container input[type="button"] {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .form-container input[type="button"]:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #00796b;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #e8f5e9;
+        }
+
+        tr:hover {
+            background-color: #c8e6c9;
+        }
+
+        #chartContainer {
+            width: 90%;
+            margin: 40px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Market Manager Dashboard</h1>
+
+    <div class="form-container">
+        <label>Manager ID:</label>
+        <input type="text" id="managerId" placeholder="Enter Manager ID">
+        <label>Farmer ID:</label>
+        <input type="text" id="farmerId" placeholder="Enter Farmer ID">
+        <label>Product:</label>
+        <select id="productDemand">
+            <option value="">Select Product</option>
+            <option value="Rice">Rice</option>
+            <option value="Potato">Potato</option>
+            <option value="Wheat">Wheat</option>
+            <option value="Onion">Onion</option>
+            <option value="Chili">Chili</option>
+            <option value="Corn">Corn</option>
+        </select>
+        <label>Quantity:</label>
+        <input type="number" id="quantity" placeholder="Enter Quantity" min="1">
+        <label>Region:</label>
+        <select id="region">
+            <option value="">Select Region</option>
+            <option value="North">North</option>
+            <option value="South">South</option>
+            <option value="East">East</option>
+            <option value="West">West</option>
+        </select>
+        <input type="button" value="Add/Update" onclick="addOrUpdateRow()">
+    </div>
+
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Manager ID</th>
+                <th>Farmer ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Region</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <div id="chartContainer">
+        <canvas id="chart"></canvas>
+    </div>
+
+    <script>
+        let data = [];
+        let editIndex = null;
+
+        const chartCtx = document.getElementById('chart').getContext('2d');
+        const chart = new Chart(chartCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Quantity',
+                    data: [],
+                    backgroundColor: '#4caf50',
+                    borderColor: '#388e3c',
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        function addOrUpdateRow() {
+            const managerId = document.getElementById('managerId').value.trim();
+            const farmerId = document.getElementById('farmerId').value.trim();
+            const product = document.getElementById('productDemand').value.trim();
+            const quantity = parseInt(document.getElementById('quantity').value.trim(), 10);
+            const region = document.getElementById('region').value.trim();
+
+            if (!managerId || !farmerId || !product || isNaN(quantity) || !region) {
+                alert('Please fill all fields with valid data!');
+                return;
+            }
+
+            const tableBody = document.getElementById('tableBody');
+
+            if (editIndex !== null) {
+                data[editIndex] = { managerId, farmerId, product, quantity, region };
+                updateTable();
+                updateChart();
+                editIndex = null;
+            } else {
+                data.push({ managerId, farmerId, product, quantity, region });
+                updateTable();
+                updateChart();
+            }
+
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('managerId').value = '';
+            document.getElementById('farmerId').value = '';
+            document.getElementById('productDemand').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('region').value = '';
+        }
+
+        function updateTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            data.forEach((entry, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${entry.managerId}</td>
+                    <td>${entry.farmerId}</td>
+                    <td>${entry.product}</td>
+                    <td>${entry.quantity}</td>
+                    <td>${entry.region}</td>
+                    <td>
+                        <button onclick="editRow(${index})">Edit</button>
+                        <button onclick="deleteRow(${index})">Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        function updateChart() {
+            const labels = data.map(entry => `${entry.product} (${entry.region})`);
+            const quantities = data.map(entry => entry.quantity);
+
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = quantities;
+            chart.update();
+        }
+
+        function editRow(index) {
+            const entry = data[index];
+            document.getElementById('managerId').value = entry.managerId;
+            document.getElementById('farmerId').value = entry.farmerId;
+            document.getElementById('productDemand').value = entry.product;
+            document.getElementById('quantity').value = entry.quantity;
+            document.getElementById('region').value = entry.region;
+            editIndex = index;
+        }
+
+        function deleteRow(index) {
+            data.splice(index, 1);
+            updateTable();
+            updateChart();
+        }
+    </script>
+</body>
+</html>

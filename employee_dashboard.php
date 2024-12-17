@@ -235,13 +235,7 @@ $conn->close();
                     <input type="email" name="email" value="<?= $row['email'] ?>" required>
 
                     <!-- Address Dropdown Menu for Update -->
-                    <select name="address" required>
-                      <option value="Block A, Road 1, House 3, Flat 5" <?= $row['address'] == 'Block A, Road 1, House 3, Flat 5' ? 'selected' : '' ?>>Block A, Road 1, House 3, Flat 5</option>
-                      <option value="Block B, Road 2, House 10, Flat 2" <?= $row['address'] == 'Block B, Road 2, House 10, Flat 2' ? 'selected' : '' ?>>Block B, Road 2, House 10, Flat 2</option>
-                      <option value="Block C, Road 3, House 5, Flat 8" <?= $row['address'] == 'Block C, Road 3, House 5, Flat 8' ? 'selected' : '' ?>>Block C, Road 3, House 5, Flat 8</option>
-                      <option value="Block D, Road 4, House 7, Flat 12" <?= $row['address'] == 'Block D, Road 4, House 7, Flat 12' ? 'selected' : '' ?>>Block D, Road 4, House 7, Flat 12</option>
-                      <option value="Block E, Road 5, House 1, Flat 4" <?= $row['address'] == 'Block E, Road 5, House 1, Flat 4' ? 'selected' : '' ?>>Block E, Road 5, House 1, Flat 4</option>
-                    </select>
+                    <input type="text" name="address" placeholder="Address" required>
 
                     <select name="role" required>
                       <option value="Manager" <?= $row['role'] == 'Manager' ? 'selected' : '' ?>>Manager</option>

@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <select id="role" name="role" required>
         <option value="Agricultural Officer">Agricultural Officer</option>
         <option value="Farmer">Farmer</option>
+        <option value="admin">Admin</option>
         <option value="Customer">Customer</option>
         <option value="Food Quality Officer">Food Quality Officer</option>
         <option value="Market Manager">Market Manager</option>

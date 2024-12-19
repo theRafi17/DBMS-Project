@@ -3,11 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBMS Project</title>
+    <title>Consumer Dashboard</title>
 </head>
 <body>
-    <h1>I am Rafi</h1>
-    <h3>This is my second push to github</h3>
-    <h5>work done</h5>
+
+<h1>Consumer Dashboard</h1>
+
+<!-- Product Table -->
+<h2>Available Products</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Seasonality</th>
+            <th>Available Quantity</th>
+            <th>Price (per unit)</th>
+            <th>Quantity to Purchase</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if ($productResult && $productResult->num_rows > 0): ?>
+            <?php while ($row = $productResult->fetch_assoc()): ?>
+                <tr>
+                    <form method="POST">
+                        <input type="hidden" name="product_id" value="<?= $row['product_id'] ?>">
+                        <td><?= htmlspecialchars($row['product_name']) ?></td>
+                        <td><?= htmlspecialchars($row['seasonality']) ?></td>
+                        <td><?= htmlspecialchars($row['product_quantity']) ?></td>
+                        <td>$<?= htmlspecialchars($row['new_price']) ?></td>
+                        <td><input type="number" name="quantity_to_purchase" min="1" max="<?= $row['product_quantity'] ?>" required></td>
+                        <td><button type="submit" name="add_to_cart" class="action-btn">Add to Cart</button></td>
+                    </form>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr><td colspan="6">No products available.</td></tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<!-- Cart Table -->
+<h2>Your Cart</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Seasonality</th>
+            <th>Price (per unit)</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0): ?>
+            <?php foreach ($_SESSION['cart'] as $item): ?>
+                <tr>
+                    <td><?= htmlspecialchars($item['product_name']) ?></td>
+                    <td><?= htmlspecialchars($item['seasonality']) ?></td>
+                    <td>$<?= htmlspecialchars($item['price']) ?></td>
+                    <td><?= htmlspecialchars($item['quantity']) ?></td>
+                    <td>$<?= htmlspecialchars($item['total_price']) ?></td>
+                    <td></td>
+                </tr>
+            <?php endforeach; ?>
+            <tr>
+                <td colspan="6" style="text-align: center;">
+                    <form method="POST">
+                        <button type="submit" name="purchase" class="purchase-btn">Purchase</button>
+                    </form>
+                </td>
+            </tr>
+        <?php else: ?>
+            <tr><td colspan="6">Your cart is empty.</td></tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
 </body>
 </html>

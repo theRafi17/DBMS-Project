@@ -1,89 +1,76 @@
 <?php
-require 'config.php';
+session_start(); // Start session to store user data
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $conn = new mysqli("localhost", "root", "", "agriculture_product");
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
     $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $role = $_POST['role'];
     $password = $_POST['password'];
+    $role = $_POST['role'];
 
-    try {
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email AND phone = :phone AND password= :password AND role = :role ");
-        $stmt->execute([
-            ':email' => $email,
-            ':phone' => $phone,
-            ':password' => $password,
-            ':role' => $role
-            
-        ]);
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND role = ?");
+    $stmt->bind_param("ss", $email, $role);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        if (password_verify($password, $user['password'])) {
+            // Set session variables
+            $_SESSION['name'] = $user['name'];
+            $_SESSION['role'] = $user['role'];
 
-        if ($user && password_verify($password, $user['password'])) {
-            echo "Login successful! Welcome, " . $user['name'];
-
-            // Redirect to role-specific dashboard
+            // Redirect to dashboard based on role
             switch ($user['role']) {
-                case 'Agricultural Officer':
-                    header("Location: agricultural_officer_dashboard.php");
-                    exit();
-                case 'Farmer':
-                    header("Location: farmer_dashboard.php");
-                    exit();
                 case 'Admin':
                     header("Location: /admin_db/index.php");
-                    exit();
-                case 'Customer':
-                    header("Location: customer_dashboard.php");
-                    exit();
-                case 'Food Quality Officer':
-                    header("Location: food_quality_officer_dashboard.php");
-                    exit();
-                case 'Market Manager':
-                    header("Location: market_manager_dashboard.php");
-                    exit();
-                case 'Warehouse Manager':
-                    header("Location: warehouse_manager_dashboard.php");
-                    exit();
+                    break;
+                case 'User':
+                    header("Location: user_dashboard.php");
+                    break;
+                case 'Guest':
+                    header("Location: guest_dashboard.php");
+                    break;
                 default:
-                    echo "Unknown role!";
-                    exit();
+                    echo "Role not recognized.";
             }
+            exit;
         } else {
-            echo "Invalid credentials!";
+            echo "Incorrect password.";
         }
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+    } else {
+        echo "No user found with the given email and role.";
     }
+
+    $conn->close();
 }
 ?>
-
-<form id="login-form" action="login.php" method="POST">
-    <label for="email-login">Email</label>
-    
+<!DOCTYPE html>
 
 
-    <input type="email" id="email-login" name="email" required>
+<html>
 
-    <label for="phone">Phone Number</label>
-    <input type="tel" id="phone" name="phone" required>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="login_php.css">
+</head>
 
-    <label for="password-login">Password</label>
-    <input type="password" id="password-login" name="password" required>
+<body>
+    <form method="POST">
+        <label>Email:</label><input type="email" name="email" required><br>
+        <label>Password:</label><input type="password" name="password" required><br>
+        <label>Role:</label>
+        <select name="role" required>
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+            <option value="Guest">Guest</option>
+        </select><br>
+        <button type="submit">Login</button>
+    </form>
+</body>
 
-    <label for="role">Employee Role</label>
-    <select id="role" name="role" required>
-        <option value="Agricultural Officer">Agricultural Officer</option>
-        <option value="Farmer">Farmer</option>
-        
-        <option value="admin">Admin</option>
-        <option value="Customer">Customer</option>
-        <option value="Food Quality Officer">Food Quality Officer</option>
-        <option value="Market Manager">Market Manager</option>
-        <option value="Warehouse Manager">Warehouse Manager</option>
-    </select>
-
-    <button type="submit">Login</button>
-
-    <link rel="stylesheet" href="login_php.css">
-</form>
+</html>

@@ -1,61 +1,59 @@
 <?php
-require 'config.php';
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $conn = new mysqli("localhost", "root", "", "agriculture_product");
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
     $name = $_POST['name'];
     $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $phone = $_POST['phone'];
     $role = $_POST['role'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT); // Encrypt password
 
-    try {
-        $stmt = $conn->prepare("INSERT INTO users (name, email, phone, role, password) VALUES (:name, :email, :phone, :role, :password)");
-        $stmt->execute([
-            ':name' => $name,
-            ':email' => $email,
-            ':phone' => $phone,
-            ':role' => $role,
-            ':password' => $password
-        ]);
-        echo "Signup successful!";
-    } catch (PDOException $e) {
-        if ($e->getCode() == 23000) {
-            echo "Email already exists!";
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        echo "Email already exists.";
+    } else {
+        $stmt = $conn->prepare("INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $name, $email, $password, $phone, $role);
+        if ($stmt->execute()) {
+            echo "Registration successful. <a href='login.php'>Login here</a>";
         } else {
-            echo "Error: " . $e->getMessage();
+            echo "Error: " . $stmt->error;
         }
     }
+
+    $conn->close();
 }
 ?>
-<form id="signup-form" action="signup.php" method="POST">
-    <label for="name">Name</label>
+<!DOCTYPE html>
+<html>
 
-    
+<head>
+    <title>Sign Up</title>
+    <link rel="stylesheet" type="text/css" href="login_php.css">
+</head>
 
-    <input type="text" id="name" name="name" required>
+<body>
+    <form method="POST">
+        <label>Name:</label><input type="text" name="name" required><br>
+        <label>Email:</label><input type="email" name="email" required><br>
+        <label>Password:</label><input type="password" name="password" required><br>
+        <label>Phone:</label><input type="text" name="phone" required><br>
+        <label>Role:</label>
+        <select name="role" required>
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+            <option value="Guest">Guest</option>
+        </select><br>
+        <button type="submit">Sign Up</button>
+    </form>
+</body>
 
-    <label for="email">Email</label>
-    <input type="email" id="email" name="email" required>
-
-    <label for="phone">Phone Number</label>
-    <input type="tel" id="phone" name="phone" required>
-
-    <label for="role">Employee Role</label>
-    <select id="role" name="role" required>
-        <option value="Agricultural Officer">Agricultural Officer</option>
-        <option value="Farmer">Farmer</option>
-        <option value="admin">Admin</option>
-        <option value="Customer">Customer</option>
-        <option value="Food Quality Officer">Food Quality Officer</option>
-        <option value="Market Manager">Market Manager</option>
-        <option value="Warehouse Manager">Warehouse Manager</option>
-    </select>
-
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" required>
-
-    <button type="submit">Signup</button>
-
-    <link rel="stylesheet" href="signup_php.css">
-
-</form>
+</html>

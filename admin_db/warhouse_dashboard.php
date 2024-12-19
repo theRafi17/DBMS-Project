@@ -1,44 +1,3 @@
-<?php
-// Database connection
-$conn = new mysqli('localhost', 'root', '', 'agriculture_product'); // Adjust credentials as needed
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Handle CRUD operations
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'];
-    $id = $_POST['id'] ?? null;
-    $govt_office_id = $_POST['govt_office_id'] ?? null;
-    $address = $_POST['address'] ?? null;
-    $storage_capacity = $_POST['storage_capacity'] ?? null;
-    $current_stock_level = $_POST['current_stock_level'] ?? null;
-
-    if ($action === 'add') {
-        $stmt = $conn->prepare("INSERT INTO warehouses (govt_office_id, address, storage_capacity, current_stock_level) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param('ssdd', $govt_office_id, $address, $storage_capacity, $current_stock_level);
-        $stmt->execute();
-        echo json_encode(['success' => true]);
-    } elseif ($action === 'edit') {
-        $stmt = $conn->prepare("UPDATE warehouses SET govt_office_id = ?, address = ?, storage_capacity = ?, current_stock_level = ? WHERE id = ?");
-        $stmt->bind_param('ssddi', $govt_office_id, $address, $storage_capacity, $current_stock_level, $id);
-        $stmt->execute();
-        echo json_encode(['success' => true]);
-    } elseif ($action === 'delete') {
-        $stmt = $conn->prepare("DELETE FROM warehouses WHERE id = ?");
-        $stmt->bind_param('i', $id);
-        $stmt->execute();
-        echo json_encode(['success' => true]);
-    }
-    exit;
-}
-
-// Fetch all data for display
-$result = $conn->query("SELECT * FROM warehouses");
-$warehouses = $result->fetch_all(MYSQLI_ASSOC);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,10 +9,28 @@ $warehouses = $result->fetch_all(MYSQLI_ASSOC);
 
     <style>
         /* Add your styles here */
+        .back-button {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .back-button:hover {
+            background-color: #e67e22;
+        }
     </style>
 </head>
 <body>
     <h1>Government Warehouse Dashboard</h1>
+    
+    <!-- Back Button -->
+    <button class="back-button" onclick="goBack()">Back to Dashboard</button>
+
     <div class="form-container">
         <h2>Add or Update Warehouse Data</h2>
         <form id="warehouseForm">
@@ -70,6 +47,7 @@ $warehouses = $result->fetch_all(MYSQLI_ASSOC);
             <button type="submit">Submit</button>
         </form>
     </div>
+
     <table>
         <thead>
             <tr>
@@ -97,10 +75,17 @@ $warehouses = $result->fetch_all(MYSQLI_ASSOC);
             <?php endforeach; ?>
         </tbody>
     </table>
+
     <div class="chart-container">
         <canvas id="stockLevelChart"></canvas>
     </div>
+
     <script>
+        // Function for Back Button
+        function goBack() {
+            window.location.href = 'dashboard.php'; // Replace 'dashboard.php' with your actual dashboard page URL
+        }
+
         function editWarehouse(data) {
             document.getElementById('id').value = data.id;
             document.getElementById('govtOfficeId').value = data.govt_office_id;

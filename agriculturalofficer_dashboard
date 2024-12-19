@@ -1,0 +1,230 @@
+<?php
+session_start();
+
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "agriculture_product";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Add Agriculture Officer
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
+    $officer_name = $_POST['officer_name'];
+    $officer_id = $_POST['officer_id'];
+    $phone_no = $_POST['phone_no'];
+    $email = $_POST['email'];
+    $storage_check = $_POST['storage_check'];
+    $product_type = $_POST['product_type'];
+    $selling_price = $_POST['selling_price'];
+
+    $stmt = $conn->prepare("INSERT INTO agriculture_officers (officer_name, officer_id, phone_no, email, storage_check, product_type, selling_price) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sissssd", $officer_name, $officer_id, $phone_no, $email, $storage_check, $product_type, $selling_price);
+    if ($stmt->execute()) {
+        echo "<script>alert(added successfully!');</script>";
+    } else {
+        echo "<script>alert('Error adding product.');</script>";
+    }
+    $stmt->close();
+}
+
+// Update Officer Data
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
+    $officer_name = $_POST['officer_name'];
+    $officer_id = $_POST['officer_id'];
+    $phone_no = $_POST['phone_no'];
+    $email = $_POST['email'];
+    $storage_check = $_POST['storage_check'];
+    $product_type = $_POST['product_type'];
+    $selling_price = $_POST['selling_price'];
+
+    $stmt = $conn->prepare("UPDATE agriculture_officers SET officer_name=?, phone_no=?, email=?, storage_check=?, product_type=?, selling_price=? WHERE officer_id=?");
+    $stmt->bind_param("sisssdi", $officer_name, $phone_no, $email, $storage_check, $product_type, $selling_price, $officer_id);
+    if ($stmt->execute()) {
+        echo "<script>alert('Officer updated successfully!');</script>";
+    } else {
+        echo "<script>alert('Error updating officer.');</script>";
+    }
+    $stmt->close();
+}
+
+// Delete Officer
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
+    $officer_id = $_POST['officer_id'];
+
+    $stmt = $conn->prepare("DELETE FROM agriculture_officers WHERE officer_id=?");
+    $stmt->bind_param("i", $officer_id);
+    if ($stmt->execute()) {
+        echo "<script>alert('Officer deleted successfully!');</script>";
+    } else {
+        echo "<script>alert('Error deleting officer.');</script>";
+    }
+    $stmt->close();
+}
+
+// Fetch officers from the database with optional search
+$search = isset($_POST['search']) ? $_POST['search'] : '';
+if ($search) {
+    $officerQuery = $conn->prepare("SELECT * FROM agriculture_officers WHERE officer_name LIKE ? OR ID LIKE ?"); 
+    $search_param = "%$search%";
+    $officerQuery->bind_param("ss", $search_param, $search_param);
+    $officerQuery->execute();
+    $officerResult = $officerQuery->get_result();
+} else {
+    $officerQuery = "SELECT * FROM agriculture_officers";
+    $officerResult = $conn->query($officerQuery);
+}
+
+$conn->close();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agriculture Officer Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2e8b57;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .form-container, .table-container {
+            background: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #2e8b57;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #276847;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2e8b57;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Agriculture Officer Dashboard</h1>
+
+        <!-- Search Bar -->
+        <form method="POST" class="form-container">
+            <input type="text" name="search" placeholder="Search by name or product type" value="<?= htmlspecialchars($search) ?>">
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- Officer Form -->
+        <div class="form-container">
+            <h2>Add New Officer</h2>
+            <form method="POST">
+                <input type="text" name="officer_name" placeholder="Officer Name" required>
+                <input type="text" name="officer_id" placeholder="Officer ID" required>
+                <input type="tel" name="phone_no" placeholder="Phone Number" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="storage_check" placeholder="Storage Check" required>
+                <input type="text" name="product_type" placeholder="Product Type" required>
+                <input type="number" step="0.01" name="selling_price" placeholder="Selling Price" required>
+                <button type="submit" name="submit">Add Officer</button>
+            </form>
+        </div>
+
+        <!-- Officer Table -->
+        <div class="table-container">
+            <h2>Officer List</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Storage</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($officerResult && $officerResult->num_rows > 0): ?>
+                        <?php while ($row = $officerResult->fetch_assoc()): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row['officer_id']) ?></td>
+                                <td><?= htmlspecialchars($row['officer_name']) ?></td>
+                                <td><?= htmlspecialchars($row['phone_no']) ?></td>
+                                <td><?= htmlspecialchars($row['email']) ?></td>
+                                <td><?= htmlspecialchars($row['storage_check']) ?></td>
+                                <td><?= htmlspecialchars($row['product_type']) ?></td>
+                                <td><?= htmlspecialchars($row['selling_price']) ?></td>
+                                <td>
+                                    <form method="POST" style="display:inline;">
+                                        <input type="hidden" name="officer_id" value="<?= $row['officer_id'] ?>">
+                                        <button type="submit" name="delete">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="8">No officers found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -48,7 +48,8 @@
 
         .form-container input[type="text"],
         .form-container input[type="number"],
-        .form-container input[type="button"] {
+        .form-container input[type="button"],
+        .form-container select {
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
@@ -163,8 +164,11 @@
         <label for="govtOfficeId">Government Office ID:</label>
         <input type="text" id="govtOfficeId" required>
 
-        <label for="address">Address:</label>
-        <input type="text" id="address" required>
+        <label for="roadNo">Road No:</label>
+        <input type="text" id="roadNo" required>
+
+        <label for="houseNo">House No:</label>
+        <input type="text" id="houseNo" required>
 
         <label for="storageCapacity">Storage Capacity (m³):</label>
         <input type="number" id="storageCapacity" min="0" required>
@@ -180,7 +184,8 @@
         <thead>
             <tr>
                 <th>Government Office ID</th>
-                <th>Address</th>
+                <th>Road No</th>
+                <th>House No</th>
                 <th>Storage Capacity (m³)</th>
                 <th>Current Stock Level (Kg)</th>
                 <th>Actions</th>
@@ -204,12 +209,13 @@
         // Function to add or update warehouse data in the table
         function addWarehouseData() {
             const govtOfficeId = document.getElementById("govtOfficeId").value;
-            const address = document.getElementById("address").value;
+            const roadNo = document.getElementById("roadNo").value;
+            const houseNo = document.getElementById("houseNo").value;
             const storageCapacity = parseFloat(document.getElementById("storageCapacity").value);
             const currentStockLevel = parseFloat(document.getElementById("currentStockLevel").value);
 
             // Basic validation to ensure all fields are filled
-            if (!govtOfficeId || !address || !storageCapacity || !currentStockLevel) {
+            if (!govtOfficeId || !roadNo || !houseNo || !storageCapacity || !currentStockLevel) {
                 alert("Please fill in all fields.");
                 return;
             }
@@ -218,7 +224,8 @@
             const warehouse = {
                 id: rowCount,
                 govtOfficeId,
-                address,
+                roadNo,
+                houseNo,
                 storageCapacity,
                 currentStockLevel
             };
@@ -247,11 +254,12 @@
                 const row = tableBody.insertRow();
 
                 row.insertCell(0).textContent = warehouse.govtOfficeId;
-                row.insertCell(1).textContent = warehouse.address;
-                row.insertCell(2).textContent = warehouse.storageCapacity;
-                row.insertCell(3).textContent = warehouse.currentStockLevel;
+                row.insertCell(1).textContent = warehouse.roadNo;
+                row.insertCell(2).textContent = warehouse.houseNo;
+                row.insertCell(3).textContent = warehouse.storageCapacity;
+                row.insertCell(4).textContent = warehouse.currentStockLevel;
 
-                const actionsCell = row.insertCell(4);
+                const actionsCell = row.insertCell(5);
                 actionsCell.classList.add('actions');
                 actionsCell.innerHTML = `
                     <button onclick="editWarehouseData(${index})">Edit</button>
@@ -277,7 +285,8 @@
             const warehouse = warehouseData[index];
 
             document.getElementById("govtOfficeId").value = warehouse.govtOfficeId;
-            document.getElementById("address").value = warehouse.address;
+            document.getElementById("roadNo").value = warehouse.roadNo;
+            document.getElementById("houseNo").value = warehouse.houseNo;
             document.getElementById("storageCapacity").value = warehouse.storageCapacity;
             document.getElementById("currentStockLevel").value = warehouse.currentStockLevel;
 
@@ -288,7 +297,8 @@
         // Function to clear the input fields after adding or updating data
         function clearInputFields() {
             document.getElementById("govtOfficeId").value = '';
-            document.getElementById("address").value = '';
+            document.getElementById("roadNo").value = '';
+            document.getElementById("houseNo").value = '';
             document.getElementById("storageCapacity").value = '';
             document.getElementById("currentStockLevel").value = '';
         }

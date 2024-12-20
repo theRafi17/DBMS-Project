@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(120deg, #ff9a9e, #fad0c4, #fbc2eb);
+      color: #333;
+    }
+    .dashboard {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    .dashboard h1 {
+      text-align: center;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    .btn {
+      padding: 6px 12px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 2px;
+    }
+    .btn:hover {
+      background-color: #218838;
+    }
+    .btn-delete {
+      background-color: #dc3545;
+    }
+    .btn-delete:hover {
+      background-color: #c82333;
+    }
+    .chart-container {
+      margin-top: 20px;
+    }
+    tbody tr {
+      transition: background-color 0.5s ease-in-out;
+    }
+    tbody tr:hover {
+      background: linear-gradient(90deg, #fbc2eb, #fad0c4, #ff9a9e);
+      animation: colorChange 3s linear infinite;
+    }
+    @keyframes colorChange {
+      0% { background-color: #fbc2eb; }
+      50% { background-color: #fad0c4; }
+      100% { background-color: #ff9a9e; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <h1>Product Dashboard</h1>
+    <div>
+      <h3>Add Product</h3>
+      <label for="productName">Name:</label>
+      <input type="text" id="productName" placeholder="Product Name">
+      <label for="productPrice">Price (per unit):</label>
+      <input type="number" id="productPrice" placeholder="Price" min="1">
+      <label for="productQuantity">Available Quantity:</label>
+      <input type="number" id="productQuantity" placeholder="Quantity" min="1">
+      <button class="btn" onclick="addProduct()">Add Product</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Product ID</th>
+          <th>Name</th>
+          <th>Price (per unit)</th>
+          <th>Available Quantity</th>
+          <th>Quantity to Buy</th>
+          <th>Total Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productTable">
+        <!-- Dynamic Product Rows -->
+      </tbody>
+    </table>
+    <div class="chart-container">
+      <canvas id="productChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    let productIdCounter = 1;
+    const chartLabels = [];
+    const chartData = [];
+    
+    const ctx = document.getElementById('productChart').getContext('2d');
+    const productChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartLabels,
+        datasets: [{
+          label: 'Quantity to Buy',
+          data: chartData,
+          backgroundColor: '#36a2eb',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    function addProduct() {
+      const name = document.getElementById('productName').value;
+      const price = parseFloat(document.getElementById('productPrice').value);
+      const quantity = parseInt(document.getElementById('productQuantity').value);
+      
+      if (!name || !price || !quantity) {
+        alert('Please fill out all fields');
+        return;
+      }
+
+      // Add product data to table
+      const tableBody = document.getElementById('productTable');
+      const row = document.createElement('tr');
+      row.setAttribute('data-id', productIdCounter);
+      row.innerHTML = `
+        <td>${productIdCounter}</td>
+        <td contenteditable="true">${name}</td>
+        <td contenteditable="true" class="unit-price">${price}</td>
+        <td contenteditable="true">${quantity}</td>
+        <td><input type="number" value="1" min="1" class="qty" oninput="updateChart()"></td>
+        <td class="total-price">$${price}</td>
+        <td>
+          <button class="btn btn-delete" onclick="deleteProduct(${productIdCounter})">Delete</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+
+      // Update chart data
+      chartLabels.push(name);
+      chartData.push(1);
+      productChart.update();
+
+      // Clear inputs
+      document.getElementById('productName').value = '';
+      document.getElementById('productPrice').value = '';
+      document.getElementById('productQuantity').value = '';
+
+      productIdCounter++;
+    }
+
+    function updateChart() {
+      const rows = document.querySelectorAll('#productTable tr');
+      rows.forEach((row, index) => {
+        const quantityInput = row.querySelector('.qty');
+        const unitPrice = parseFloat(row.querySelector('.unit-price').textContent);
+        const totalPriceCell = row.querySelector('.total-price');
+        const quantity = parseInt(quantityInput.value) || 0;
+
+        // Update total price
+        totalPriceCell.textContent = `$${(unitPrice * quantity).toFixed(2)}`;
+
+        // Update chart data
+        chartData[index] = quantity;
+      });
+      productChart.update();
+    }
+
+    function deleteProduct(productId) {
+      const row = document.querySelector(`tr[data-id="${productId}"]`);
+      const index = Array.from(row.parentElement.children).indexOf(row);
+
+      // Remove from table
+      row.remove();
+
+      // Remove from chart
+      chartLabels.splice(index, 1);
+      chartData.splice(index, 1);
+      productChart.update();
+    }
+  </script>
+</body>
+</html>

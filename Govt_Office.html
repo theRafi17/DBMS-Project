@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Warehouse Dashboard</title>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Global reset and body styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f4f7fa;
+            color: #333;
+            padding: 20px;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Header */
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        /* Form Styles */
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-container label {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-container input[type="text"],
+        .form-container input[type="number"],
+        .form-container input[type="button"],
+        .form-container select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container input[type="text"]:focus,
+        .form-container input[type="number"]:focus {
+            background-color: #e8f6f3;
+        }
+
+        .form-container input[type="button"] {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container input[type="button"]:hover {
+            background-color: #2980b9;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #ecf0f1;
+        }
+
+        .actions button {
+            padding: 6px 12px;
+            background-color: #f39c12;
+            border: none;
+            color: white;
+            font-size: 14px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .actions button:hover {
+            background-color: #e67e22;
+            transform: scale(1.1);
+        }
+
+        .actions button:active {
+            transform: scale(1);
+        }
+
+        /* Background Motion Color */
+        @keyframes backgroundColorShift {
+            0% { background-color: #f4f7fa; }
+            25% { background-color: #ffefd5; }
+            50% { background-color: #f0f8ff; }
+            75% { background-color: #d3f9f1; }
+            100% { background-color: #f4f7fa; }
+        }
+
+        body {
+            animation: backgroundColorShift 10s infinite;
+        }
+
+        /* Highlight edit row with color */
+        .edit-row {
+            background-color: #f39c12;
+            color: #fff;
+            transition: background-color 0.5s ease;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 30px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Government Warehouse Dashboard</h1>
+
+    <!-- Form to add or update warehouse data -->
+    <div class="form-container">
+        <h2>Add or Update Warehouse Data</h2>
+        <label for="govtOfficeId">Government Office ID:</label>
+        <input type="text" id="govtOfficeId" required>
+
+        <label for="roadNo">Road No:</label>
+        <input type="text" id="roadNo" required>
+
+        <label for="houseNo">House No:</label>
+        <input type="text" id="houseNo" required>
+
+        <label for="storageCapacity">Storage Capacity (m³):</label>
+        <input type="number" id="storageCapacity" min="0" required>
+
+        <label for="currentStockLevel">Current Stock Level (Kg):</label>
+        <input type="number" id="currentStockLevel" min="0" required>
+
+        <input type="button" value="Add Warehouse Data" onclick="addWarehouseData()">
+    </div>
+
+    <!-- Display Warehouse Data in Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Government Office ID</th>
+                <th>Road No</th>
+                <th>House No</th>
+                <th>Storage Capacity (m³)</th>
+                <th>Current Stock Level (Kg)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="warehouseTableBody">
+            <!-- Table rows will be added dynamically -->
+        </tbody>
+    </table>
+
+    <!-- Chart Container -->
+    <div class="chart-container">
+        <canvas id="stockLevelChart"></canvas>
+    </div>
+
+    <script>
+        let warehouseData = [];
+        let rowCount = 0;
+        let editIndex = null;
+
+        // Function to add or update warehouse data in the table
+        function addWarehouseData() {
+            const govtOfficeId = document.getElementById("govtOfficeId").value;
+            const roadNo = document.getElementById("roadNo").value;
+            const houseNo = document.getElementById("houseNo").value;
+            const storageCapacity = parseFloat(document.getElementById("storageCapacity").value);
+            const currentStockLevel = parseFloat(document.getElementById("currentStockLevel").value);
+
+            // Basic validation to ensure all fields are filled
+            if (!govtOfficeId || !roadNo || !houseNo || !storageCapacity || !currentStockLevel) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            // Create an object to store the warehouse data
+            const warehouse = {
+                id: rowCount,
+                govtOfficeId,
+                roadNo,
+                houseNo,
+                storageCapacity,
+                currentStockLevel
+            };
+
+            if (editIndex !== null) {
+                warehouseData[editIndex] = warehouse;
+                editIndex = null;  // Clear the edit index
+            } else {
+                warehouseData.push(warehouse);
+                rowCount++;
+            }
+
+            // Update the table and chart
+            updateTable();
+            updateChart();
+            clearInputFields();
+        }
+
+        // Function to update the table after adding or editing data
+        function updateTable() {
+            const tableBody = document.getElementById("warehouseTableBody");
+            tableBody.innerHTML = "";  // Clear existing table content
+
+            // Add each warehouse data to the table
+            warehouseData.forEach((warehouse, index) => {
+                const row = tableBody.insertRow();
+
+                row.insertCell(0).textContent = warehouse.govtOfficeId;
+                row.insertCell(1).textContent = warehouse.roadNo;
+                row.insertCell(2).textContent = warehouse.houseNo;
+                row.insertCell(3).textContent = warehouse.storageCapacity;
+                row.insertCell(4).textContent = warehouse.currentStockLevel;
+
+                const actionsCell = row.insertCell(5);
+                actionsCell.classList.add('actions');
+                actionsCell.innerHTML = `
+                    <button onclick="editWarehouseData(${index})">Edit</button>
+                    <button onclick="deleteWarehouseData(${index})">Delete</button>
+                `;
+
+                // Add highlight class for the row being edited
+                if (index === editIndex) {
+                    row.classList.add("edit-row");
+                }
+            });
+        }
+
+        // Function to delete warehouse data
+        function deleteWarehouseData(index) {
+            warehouseData.splice(index, 1);
+            updateTable();
+            updateChart();
+        }
+
+        // Function to edit warehouse data and populate the form
+        function editWarehouseData(index) {
+            const warehouse = warehouseData[index];
+
+            document.getElementById("govtOfficeId").value = warehouse.govtOfficeId;
+            document.getElementById("roadNo").value = warehouse.roadNo;
+            document.getElementById("houseNo").value = warehouse.houseNo;
+            document.getElementById("storageCapacity").value = warehouse.storageCapacity;
+            document.getElementById("currentStockLevel").value = warehouse.currentStockLevel;
+
+            editIndex = index;  // Set the edit index
+            updateTable();
+        }
+
+        // Function to clear the input fields after adding or updating data
+        function clearInputFields() {
+            document.getElementById("govtOfficeId").value = '';
+            document.getElementById("roadNo").value = '';
+            document.getElementById("houseNo").value = '';
+            document.getElementById("storageCapacity").value = '';
+            document.getElementById("currentStockLevel").value = '';
+        }
+
+        // Function to update the chart
+        function updateChart() {
+            const stockLevels = warehouseData.map(warehouse => warehouse.currentStockLevel);
+            const labels = warehouseData.map(warehouse => warehouse.govtOfficeId);
+
+            const ctx = document.getElementById('stockLevelChart').getContext('2d');
+
+            if (window.barChart) {
+                window.barChart.destroy();
+            }
+
+            window.barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Current Stock Level (Kg)',
+                        data: stockLevels,
+                        backgroundColor: '#3498db',
+                        borderColor: '#2980b9',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Government Office ID'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Stock Level (Kg)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

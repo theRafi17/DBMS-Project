@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Manager</title>
+    <link rel="stylesheet" href="Market_Manager1.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(120deg, #f7fafc, #e0ffe0);
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #004d40;
+            padding: 10px 20px;
+        }
+
+        nav .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav .links {
+            display: flex;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        nav .search-container {
+            display: flex;
+            align-items: center;
+        }
+
+        nav input[type="text"] {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        nav .message-container {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        nav .message-icon {
+            margin-right: 5px;
+        }
+
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: rgb(15, 150, 22);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .card h3 {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            height: 300px !important;
+            width: 100% !important;
+        }
+
+        
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="logo">Market Manager</div>
+        <div class="links">
+            <a href="Market_manager.html">Overview</a>
+            <a href="Demand.html">Demand</a>
+            <a href="product_market_price.html">Product Market Price</a>
+            <a href="Analytics_chart.html">Analytical Chart</a>
+            <a href="logout.html">Logout</a>
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="message-container">
+            <span class="message-icon">📧</span>
+            <span id="messageCount">3</span>
+        </div>
+    </nav>
+
+    <div class="content">
+        <!-- Overview Section -->
+        <section id="overview">
+            <h2>Overview</h2>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>Total Products</h3>
+                    <p id="totalProducts">0</p>
+                </div>
+                <div class="card">
+                    <h3>Total Demand</h3>
+                    <p id="totalDemand">0</p>
+                </div>
+                <div class="card">
+                    <h3>Average Product Price</h3>
+                    <p id="avgPrice">$0.00</p>
+                </div>
+                <div class="card">
+                    <h3>Active Regions</h3>
+                    <p id="activeRegions">0</p>
+                </div>
+                <div class="card">
+                    <h3>High-Demand Product</h3>
+                    <p id="highDemandProduct">None</p>
+                </div>
+                <div class="card">
+                    <h3>Low-Demand Product</h3>
+                    <p id="lowDemandProduct">None</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demand Graph Section -->
+        <div class="chart-row">
+            <section id="demand-graph" class="chart-container">
+                <h2>Demand Trends</h2>
+                <canvas id="demandChart"></canvas>
+            </section>
+        
+            <section id="product-price" class="chart-container">
+                <h2>Product Market Prices</h2>
+                <canvas id="priceChart"></canvas>
+            </section>
+        </div>
+        
+        <style>
+            .chart-row {
+                display: flex;
+                justify-content: space-between;
+                gap: 20px;
+            }
+        
+            .chart-container {
+                flex: 1;
+                height: auto;
+            }
+        
+            canvas {
+                height: 300px !important;
+                width: 100% !important;
+            }
+        </style>
+        
+    </div>
+
+ 
+
+    <script>
+        const demandCtx = document.getElementById('demandChart').getContext('2d');
+        const demandChart = new Chart(demandCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Demand Quantity',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const priceCtx = document.getElementById('priceChart').getContext('2d');
+        const priceChart = new Chart(priceCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Average Price',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Mock data for demonstration
+        const data = {
+            products: ['Rice', 'Potato', 'Wheat', 'Onion', 'Chili', 'Corn'],
+            demands: [120, 90, 150, 100, 80, 130],
+            prices: [1.2, 0.8, 1.5, 1.0, 0.9, 1.3]
+        };
+
+        function updateOverview() {
+            document.getElementById('totalProducts').textContent = data.products.length;
+            document.getElementById('totalDemand').textContent = data.demands.reduce((a, b) => a + b, 0);
+            document.getElementById('avgPrice').textContent = `$${(data.prices.reduce((a, b) => a + b, 0) / data.prices.length).toFixed(2)}`;
+            document.getElementById('activeRegions').textContent = 4; // Mock value
+            document.getElementById('highDemandProduct').textContent = data.products[data.demands.indexOf(Math.max(...data.demands))];
+            document.getElementById('lowDemandProduct').textContent = data.products[data.demands.indexOf(Math.min(...data.demands))];
+        }
+
+        function updateCharts() {
+            demandChart.data.labels = data.products;
+            demandChart.data.datasets[0].data = data.demands;
+            demandChart.update();
+
+            priceChart.data.labels = data.products;
+            priceChart.data.datasets[0].data = data.prices;
+            priceChart.update();
+        }
+
+        updateOverview();
+        updateCharts();
+        
+
+    </script>
+</body>
+</html>

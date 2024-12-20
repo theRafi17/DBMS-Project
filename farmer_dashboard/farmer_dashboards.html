@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard</title>
+    <link rel="stylesheet" href="farmer_style.css">
+    <script src="ajax.js"></script>
+</head>
+<body>
+    <h1>Farmer Dashboard</h1>
+
+    <!-- Form to add or update crop information -->
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Farmer ID</th>
+                    <td><input type="text" id="farmerId"></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Crop</th>
+                    <td>
+                        <select id="cropType">
+                            <option value="">Select Crop</option>
+                            <option value="Potatoes">Potatoes</option>
+                            <option value="Wheat">Wheat</option>
+                            <option value="Onion">Onion</option>
+                            <option value="Rice">Rice</option>
+                            <option value="Chili">Chili</option>
+                            <option value="Carrot">Carrot</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Planting Date</th>
+                    <td><input type="date" id="plantingDate"></td>
+                </tr>
+                <tr>
+                    <th>Harvest Date</th>
+                    <td><input type="date" id="harvestDate"></td>
+                </tr>
+                <tr>
+                    <th>Quantity (Kg)</th>
+                    <td><input type="number" id="quantity"></td>
+                </tr>
+                <tr>
+                    <th>Price per Kg</th>
+                    <td><input type="number" id="pricePerKg"></td>
+                </tr>
+                <tr>
+                    <th>Total Price</th>
+                    <td><input type="number" id="totalPrice" disabled></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button onclick="addOrUpdate()">Add/Update</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Table to display crop data -->
+    <table border="1" id="cropTable">
+        <thead>
+            <tr>
+                <th>Farmer ID</th>
+                <th>Crop</th>
+                <th>Planting Date</th>
+                <th>Harvest Date</th>
+                <th>Quantity</th>
+                <th>Price per Kg</th>
+                <th>Total Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Rows will be inserted dynamically -->
+        </tbody>
+    </table>
+</body>
+</html>

@@ -77,6 +77,7 @@ $conn->close();
 <html lang="en">
 
 <head>
+<a href="/admin_db/index.php" class="back-button">Back</a>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Employee Dashboard</title>

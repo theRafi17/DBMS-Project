@@ -18,13 +18,10 @@
             <ul>
                 <li><a href="#overview">Dashboard Overview</a></li>
                 <li><a href="../Product_dashboard.php">Products</a></li>
-                <li><a href="../admin_db/warhouse_dashboard.php">Warhouse Dashboard</a></li>
+                <li><a href="../warhouse_dashboard.php">Warhouse Dashboard</a></li>
                 <li><a href="../Consumer_dashboard.php">Consumer Dashboard</a></li>
                 <li><a href="../employee_dashboard.php">Employee Dashboard</a></li>
                 <li><a href="#inventory">Inventory Levels</a></li>
-                <li><a href="#analytics">Analytics</a></li>
-                <li><a href="#reports">Reports</a></li>
-                <li><a href="#settings">User Settings</a></li>
             </ul>
         </nav>
     </aside>

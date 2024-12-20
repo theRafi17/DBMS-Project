@@ -29,8 +29,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 case 'Admin':
                     header("Location: /admin_db/index.php");
                     break;
+                case 'Consumer':
+                    header("Location: /admin_db/Consumer_dashboard.php");
+                    break;
                 case 'User':
-                    header("Location: user_dashboard.php");
+                    header("Location: Consumer_dashboard.php");
                     break;
                 case 'Guest':
                     header("Location: guest_dashboard.php");
@@ -66,6 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <label>Role:</label>
         <select name="role" required>
             <option value="Admin">Admin</option>
+            <option value="Consumer">Consumer</option>
             <option value="User">User</option>
             <option value="Guest">Guest</option>
         </select><br>

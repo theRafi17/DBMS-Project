@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farmer Dashboard</title>
     <link rel="stylesheet" href="farmer_style.css">
-    <script src="ajax.js"></script>
 </head>
 <body>
     <h1>Farmer Dashboard</h1>
@@ -44,11 +43,11 @@
                 </tr>
                 <tr>
                     <th>Quantity (Kg)</th>
-                    <td><input type="number" id="quantity"></td>
+                    <td><input type="number" id="quantity" onchange="updateTotalPrice()"></td>
                 </tr>
                 <tr>
                     <th>Price per Kg</th>
-                    <td><input type="number" id="pricePerKg"></td>
+                    <td><input type="number" id="pricePerKg" onchange="updateTotalPrice()"></td>
                 </tr>
                 <tr>
                     <th>Total Price</th>
@@ -78,8 +77,10 @@
             </tr>
         </thead>
         <tbody id="tableBody">
-            <!-- Rows will be inserted dynamically -->
+           
         </tbody>
     </table>
+
+    <script src="ajax.js"></script>
 </body>
 </html>
